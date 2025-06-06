@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: jspreadsheet-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - jspreadsheet-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: jspreadsheet-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - jspreadsheet-network
+
+  db:
+    image: mysql:8.0
+    container_name: jspreadsheet-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: jspreadsheet
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: jspreadsheet
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - jspreadsheet-network
+
+networks:
+  jspreadsheet-network:
+    driver: bridge
+
+volumes:
+  dbdata: 
