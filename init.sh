@@ -56,6 +56,9 @@ setup_app() {
     log_info "データベースをマイグレーション中..."
     docker compose exec app php artisan migrate
     
+    log_info "npmパッケージをインストール中..."
+    docker compose exec app npm install
+    
     log_info "アプリケーションのセットアップが完了しました"
 }
 
@@ -66,6 +69,9 @@ main() {
     setup_env
     setup_docker
     setup_app
+    
+    log_info "Viteのホットリロードをバックグラウンドで開始中..."
+    docker compose exec -d app npm run dev -- --host 0.0.0.0
     
     log_info "環境構築が完了しました"
     log_info "アプリケーションは以下のURLで起動しています"
