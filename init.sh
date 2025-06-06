@@ -56,6 +56,9 @@ setup_app() {
     log_info "データベースをマイグレーション中..."
     docker compose exec app php artisan migrate
     
+    log_info "シーダーを実行中..."
+    docker compose exec app php artisan db:seed
+    
     log_info "npmパッケージをインストール中..."
     docker compose exec app npm install
     
