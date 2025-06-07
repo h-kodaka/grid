@@ -8,6 +8,7 @@
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
+        "@vitejs/plugin-vue": "^5.2.4",
         "axios": "^1.8.2",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",
@@ -15,6 +16,10 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
-        "jspreadsheet-ce": "^5.0.2"
+        "@jspreadsheet-ce/vue": "^5.0.1",
+        "jspreadsheet": "^11.21.0",
+        "jspreadsheet-ce": "^5.0.2",
+        "jsuites": "^5.10.0",
+        "vue": "^3.5.16"
     }
 }

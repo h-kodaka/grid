@@ -54,7 +54,7 @@ setup_app() {
     docker compose exec app php artisan key:generate
     
     log_info "データベースをマイグレーション中..."
-    docker compose exec app php artisan migrate
+    docker compose exec app php artisan migrate:fresh
     
     log_info "シーダーを実行中..."
     docker compose exec app php artisan db:seed
