@@ -3,6 +3,15 @@
     <Spreadsheet v-if="!isLoading" :key="spreadsheetKey" :tabs="false" :toolbar="false">
         <Worksheet :columns="columns" :data="data" />
     </Spreadsheet>
+    <div class="mt-4">
+        <button 
+            @click="saveData" 
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            :disabled="isSaving"
+        >
+            {{ isSaving ? '保存中...' : '保存' }}
+        </button>
+    </div>
 </template>
 
 <script setup>
@@ -13,19 +22,22 @@ import { Spreadsheet, Worksheet } from "@jspreadsheet-ce/vue";
 import "jsuites/dist/jsuites.css";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 
-
 const isLoading = ref(true)
+const isSaving = ref(false)
 const spreadsheetKey = ref(0)
 const columns = [
-    { title: 'ID', type: 'text', width: 100, align: 'left' },
-    { title: '名前', type: 'text', width: 200, align: 'left' },
-    { title: 'メールアドレス', type: 'text', width: 300, align: 'left' },
-    { title: '作成日', type: 'text', width: 300, align: 'left' },
-    { title: '更新日', type: 'text', width: 300, align: 'left' }
+    { title: 'ID', type: 'text', width: 50, align: 'left', readOnly: true },
+    { title: '名前', type: 'text', width: 150, align: 'left' },
+    { title: 'メールアドレス', type: 'text', width: 300, align: 'left', readOnly: true },
+    { title: '電話番号', type: 'text', width: 150, align: 'left' },
+    { title: '携帯番号', type: 'text', width: 150, align: 'left' },
+    { title: '住所', type: 'text', width: 300, align: 'left' },
+    { title: '作成日時', type: 'text', width: 200, align: 'left', readOnly: true },
+    { title: '更新日時', type: 'text', width: 200, align: 'left', readOnly: true }
 ]
 const data = ref([])
 
-onMounted(async () => {
+const fetchData = async () => {
     try {
         const response = await axios.get('/api/users')
         
@@ -35,6 +47,9 @@ onMounted(async () => {
                 user.id || '',
                 user.name || '',
                 user.email || '',
+                user.phone_number || '',
+                user.mobile_number || '',
+                user.address || '',
                 user.created_at || '',
                 user.updated_at || ''
             ]
@@ -46,5 +61,35 @@ onMounted(async () => {
     } finally {
         isLoading.value = false
     }
+}
+
+const saveData = async () => {
+    try {
+        isSaving.value = true
+        const users = data.value.map(row => ({
+            id: row[0],
+            name: row[1],
+            email: row[2],
+            phone_number: row[3],
+            mobile_number: row[4],
+            address: row[5],
+            created_at: row[6],
+            updated_at: row[7]
+        }))
+        
+        await axios.patch('/api/users', { users })
+        await fetchData()
+        alert('保存が完了しました')
+    } catch (error) {
+        console.error('Error:', error)
+        alert('保存に失敗しました')
+    } finally {
+        isSaving.value = false
+    }
+}
+
+onMounted(async () => {
+    isLoading.value = true
+    await fetchData()
 })
 </script>
